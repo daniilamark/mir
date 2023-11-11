@@ -1,0 +1,88 @@
+! set hostname
+  hostnamectl set-hostname sw1.company.prof
+  exec bash
+! or
+  vim /etc/hostname
+! and
+  vim /etc/hosts
+  127.0.1.1 sw1 sw1.company.prof
+
+! nmtui
+  - не забыть отключиться и подключиться
+
+! проверить интерфейсы
+  ip --br a
+
+! настроить и добавить в автозапуск
+  vim /etc/network/interfaces
+
+  auto eth0
+  iface eth0 inet static
+    address 10.0.10.10/27
+    gateway 10.0.10.1
+
+! перезапуск демона сети astra
+  systemctl restart networking
+
+! альт адресс
+  vim /etc/net/ifaces/enp1s0/options
+  echo 10.0.20.10/27 > /etc/net/ifaces/en1s0/ipv4address
+  echo "default via 10.0.20.10" >  /etc/net/ifaces/enp1s0/ipv4route
+
+! перезапуск демона сети альт
+  systemctl restart network
+
+! создание пользователя
+  useradd -m sshuser
+  passwd sshuser
+
+! проверка пользователя
+  su - sshuser
+
+! настройка sudo astra
+  apt update
+  apt install sudo
+
+! alt linux
+  apt-get update
+  apt-get install sudo
+
+! из под sudo без пароля
+  echo "sshuser ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+! на альте
+  usermod -aG wheel sshuser
+
+! настройка ssh сервера astra
+  apt install openssh-server
+
+  vim /etc/ssh/sshd_config
+  #Port 20
+  Port 2023
+  PasswordAuthentication no
+
+  systemctl restart sshd
+
+! настройка ssh сервера alt
+  apt-get install openssh-server
+
+  vim /etc/openssh/sshd_config
+  #Port 20
+  Port 2023
+  PasswordAuthentication no
+
+  systemctl restart sshd
+
+! настройка ssh клиента astra
+  vim /etc/ssh/sshd_config
+
+  Host 10.0.10.10
+    Port 2023
+  Host srv1
+    Port 2023
+  Host srv1.company.prof
+    Port 2023
+
+! генерация ключей - проброска из под пользователя sshuser
+  ssh-keygen
+  ssh-copy-id sshuser@10.0.10.10
