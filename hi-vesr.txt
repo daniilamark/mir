@@ -1,0 +1,84 @@
+! изменить пароль
+  password P@ssw0rd
+  commit confirm save
+
+! смена хоста
+  configure
+  hostname RTR-BR
+  domain name company prof
+  ip address 10.10.10.2/30
+  ip firewall disable
+  exit
+  ip route 0.0.0.0/0 10.10.10.1
+  commit confirm save
+
+! проверка на RTR-BR#
+  show ip int
+  show ip route
+
+! подинтерфейсы
+  configure
+  int g 1/0/1.100
+  ip firewall disable
+  ip address 10.0.10.1/27
+  exit
+  int g 1/0/1.200
+  ip firewall disable
+  ip address 10.0.10.33/27
+  exit
+  int g 1/0/1.300
+  ip firewall disable
+  ip address 10.0.10.65/27
+  exit
+  commit confirm save
+
+! DHCP на одном примере
+  ip dhcp-server
+  ip dhcp-server pool vlan100
+  network 10.0.10.0/27
+  address-range 10.0.10.10-10.0.10.20
+  default-router 10.0.10.1
+  domain-name company prof
+  end commit confirm save
+
+! логи
+  configure
+  syslog host SRV1
+  remote-address 10.0.10.10
+  transport udp
+  severity debug
+  port 514
+  end commit confirm save
+
+! configure
+  object-group network LOCAL
+  ip prefix 10.0.10.0/27
+  exit
+  object-group network WAN
+  ip address-range 10.10.10.2
+  exit
+  nat source
+  pool WAN
+  ip address-range 10.10.10.2
+  ruleset MASQUERADE 
+  to interface g 1/0/1
+  rule 1
+  match source-address LOCAL
+  action source-nat pool WAN
+  enable
+  end commit confirm save
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
