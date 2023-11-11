@@ -39,3 +39,5 @@
     ip route add default via 10.0.20.192
     ip link set up vlan300
 
+! удалить интерфейс
+  ovs-vsctl del-port ws-hq eth3
