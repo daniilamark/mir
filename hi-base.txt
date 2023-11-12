@@ -86,3 +86,9 @@
 ! генерация ключей - проброска из под пользователя sshuser
   ssh-keygen
   ssh-copy-id sshuser@10.0.10.10
+
+
+! пакеты 
+  vim /etc/apt/sources.list
+
+  
